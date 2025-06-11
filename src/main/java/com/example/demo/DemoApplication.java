@@ -21,7 +21,7 @@ class HelloController {
 }
 
 @RestController
-public class HealthController {
+class HealthController {
     @GetMapping("/health")
     public String health() {
         return "OK";
