@@ -1,0 +1,35 @@
+name: Deploy via Docker (no Docker Hub)
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🔄 Checkout code
+      uses: actions/checkout@v3
+
+    - name: 📦 Copy source to VPS
+      uses: appleboy/scp-action@v0.1.4
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        source: "."
+        target: "/home/${{ secrets.SERVER_USER }}/spring-docker-app"
+
+    - name: 🐳 SSH to VPS and build/run Docker container
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        script: |
+          cd ~/spring-docker-app
+          docker stop spring-app || true
+          docker rm spring-app || true
+          docker build -t spring-app .
+          docker run -d --name spring-app -p 8080:8080 spring-app
