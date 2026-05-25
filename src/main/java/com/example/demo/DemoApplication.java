@@ -16,7 +16,7 @@ public class DemoApplication {
 class HelloController {
     @GetMapping("/")
     public String hello() {
-        return "Hello from Spring Boot CI/CD!";
+        return "Hello from Spring Boot CI/CD new update!";
     }
 }
 
